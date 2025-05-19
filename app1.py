@@ -18,6 +18,7 @@ def get_pin_code(gstn_number):
     
     # Extract text content from the response
     text_data = response.text
+    print(text_data)
 
     # Use regex to extract the 6-digit PIN code from the response
     pin_code_match = re.search(r'\b\d{6}\b', text_data)
