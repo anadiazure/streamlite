@@ -1,4 +1,5 @@
-chromium
+firefox-esr
+geckodriver
 wget
 curl
 unzip
