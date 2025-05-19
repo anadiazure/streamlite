@@ -17,9 +17,8 @@ def get_pin_code(gstn_number):
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    
-    driver = webdriver.Chrome(options=options)
-
+    options.binary_location = "/usr/bin/chromium"
+    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver", options=options)
     try:
         url = "https://irisgst.com/irisperidot/"
         driver.get(url)
