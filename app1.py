@@ -8,22 +8,21 @@ import re
 GOOGLE_API_KEY = "AIzaSyDo4A0wra-QnxHYmHzWmbXPuiJ8xceBdeA"
 
 def get_pin_code(gstn_number):
-    """Extracts the PIN code using BeautifulSoup instead of Selenium."""
-    url = "https://irisgst.com/irisperidot/"
-    
-    # Send a request to the page
-    response = requests.get(url)
-    
-    if response.status_code != 200:
-        return None  # Ensure we got a successful response
-    
-    # Parse HTML using BeautifulSoup
-    soup = BeautifulSoup(response.text, "html.parser")
+    """Fetches the PIN code from the GSTN details API."""
+    url = f"https://irisgst.com/gstin-filing-detail/?gstinno={gstn_number}&anti_bot_token=MTc0NzY3MzUxNToyMTk0MDZhMDBiNzM0NTAyNzI3Y2ZkOTYxMDc1NGVkMWYwZjQxMGUxNDIwMTQyYmYzMjNiODY3MzdmNTljNmJi"
 
-    # Locate the input field and search for GSTN data
-    search_box = soup.find("input", {"name": "gstinno"})
-    if not search_box:
-        return None
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        return None  # Ensure successful response
+    
+    # Extract text content from the response
+    text_data = response.text
+
+    # Use regex to extract the 6-digit PIN code from the response
+    pin_code_match = re.search(r'\b\d{6}\b', text_data)
+
+    return pin_code_match.group(0) if pin_code_match else None
 
     # Extract the target element containing PIN code
     element = soup.find("p", string=lambda text: text and "Principal Place of Business -" in text)
