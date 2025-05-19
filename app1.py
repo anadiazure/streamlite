@@ -13,13 +13,18 @@ import re
 GOOGLE_API_KEY = "AIzaSyDo4A0wra-QnxHYmHzWmbXPuiJ8xceBdeA"
 
 def get_pin_code(gstn_number):
-    """Extracts the PIN code for a given GSTN number using Selenium."""
+    """Extracts the PIN code using Selenium."""
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--headless")  # Runs without UI
+    options.add_argument("--disable-gpu")  # Prevents GPU-related issues
+    options.add_argument("--no-sandbox")  # Required for cloud execution
+    options.add_argument("--disable-dev-shm-usage")  # Prevent shared memory issues
+
+    # Manually set Chrome binary & Chromedriver paths
     options.binary_location = "/usr/bin/chromium"
     service = Service("/usr/bin/chromedriver")
+
+    # Use Service() instead of executable_path
     driver = webdriver.Chrome(service=service, options=options)
     try:
         url = "https://irisgst.com/irisperidot/"
