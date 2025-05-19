@@ -1,11 +1,6 @@
 import streamlit as st
 import requests
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
 import re
 
@@ -13,34 +8,31 @@ import re
 GOOGLE_API_KEY = "AIzaSyDo4A0wra-QnxHYmHzWmbXPuiJ8xceBdeA"
 
 def get_pin_code(gstn_number):
-    driver = webdriver.HtmlUnitDriver()
-    try:
-        url = "https://irisgst.com/irisperidot/"
-        driver.get(url)
+    """Extracts the PIN code using BeautifulSoup instead of Selenium."""
+    url = "https://irisgst.com/irisperidot/"
+    
+    # Send a request to the page
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        return None  # Ensure we got a successful response
+    
+    # Parse HTML using BeautifulSoup
+    soup = BeautifulSoup(response.text, "html.parser")
 
-        # Wait for search box
-        wait = WebDriverWait(driver, 10)
-        search_box = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='gstinno']")))
+    # Locate the input field and search for GSTN data
+    search_box = soup.find("input", {"name": "gstinno"})
+    if not search_box:
+        return None
 
-        search_box.send_keys(gstn_number)
-        search_box.send_keys(Keys.RETURN)
-
-        # Wait for results
-        wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='change_wrap_div']//p[strong[contains(text(),'Principal Place of Business -')]]")))
-
-        # Extract target element
-        try:
-            element = driver.find_element(By.XPATH, "//*[@id='change_wrap_div']//p[strong[contains(text(),'Principal Place of Business -')]]")
-            text_data = element.text.strip()
-
-            # Extract PIN code using regex
-            pin_code_match = re.search(r'\b\d{6}\b', text_data)
-            return pin_code_match.group(0) if pin_code_match else None
-        except Exception as e:
-            st.error(f"Error extracting PIN code: {e}")
-            return None
-    finally:
-        driver.quit()
+    # Extract the target element containing PIN code
+    element = soup.find("p", string=lambda text: text and "Principal Place of Business -" in text)
+    if element:
+        text_data = element.get_text(strip=True)
+        pin_code_match = re.search(r'\b\d{6}\b', text_data)
+        return pin_code_match.group(0) if pin_code_match else None
+    
+    return None
 
 def get_coordinates(pin_code):
     """Fetch latitude & longitude for a given PIN code using Google Maps API."""
