@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import re
 
 # Google Maps API Key (Replace with your actual key)
-GOOGLE_API_KEY = "AIzaSyDo4A0wra-QnxHYmHzWmbXPuiJ8xceBdeA"
+GOOGLE_API_KEY = "AIzaSyAXH8AuaroD8hnb47UEiIswJLQGcnZJRzs"
 
 def get_pin_code(gstn_number):
     """Fetches the PIN code from the GSTN details API."""
