@@ -3,10 +3,11 @@ import requests
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
 import re
+from dotenv import load_dotenv
+load_dotenv()
+import os
 
-# Google Maps API Key (Replace with your actual key)
-
-GOOGLE_API_KEY = "AIzaSyAXH8AuaroD8hnb47UEiIswJLQGcnZJRzs"
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 def get_anti_bot_token():
     url = "https://irisgst.com/irisperidot/"
     response = requests.get(url)
