@@ -7,14 +7,45 @@ import re
 # Google Maps API Key (Replace with your actual key)
 GOOGLE_API_KEY = "AIzaSyAXH8AuaroD8hnb47UEiIswJLQGcnZJRzs"
 
+def get_anti_bot_token():
+    url = "https://irisgst.com/irisperidot/"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Failed to retrieve page. Status code: {response.status_code}")
+        return None
+
+    # Parse the page content with BeautifulSoup
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Option 1: Check if the token is in an <input> element with name "anti_bot_token".
+    token_input = soup.find("input", {"name": "anti_bot_token"})
+    if token_input and token_input.has_attr("value"):
+        return token_input["value"]
+
+    # Option 2: Look inside <script> tags for a variable named "anti_bot_token".
+    for script in soup.find_all("script"):
+        # Ensure the script tag contains text.
+        if script.string:
+            # This regular expression looks for a pattern like:
+            # anti_bot_token = "TOKEN_VALUE" or anti_bot_token: "TOKEN_VALUE"
+            match = re.search(r"anti_bot_token\s*[:=]\s*['\"]([^'\"]+)['\"]", script.string)
+            if match:
+                return match.group(1)
+
+    # Option 3: Fallback: search the whole HTML text using regex
+    match = re.search(r"anti_bot_token\s*[:=]\s*['\"]([^'\"]+)['\"]", response.text)
+    if match:
+        return match.group(1)
+
+    return None
 def get_pin_code(gstn_number):
     """
     Scrapes the GSTIN filing detail page using BeautifulSoup.
     Focuses on debugging the element finding process.
     """
     base_url = "https://irisgst.com/gstin-filing-detail/"
-    anti_bot_token = "MTc0NzY1MzU4OTplYTU3N2Y2MmQ1MjRkNzY5NWJkOTZhZmQyMTU2YjhkNmNkYjFmY2UxNDA2NDkzOGJlYzk4NjRlN2M2MzNhMzg1" # VERIFY THIS TOKEN
-    url = f"https://irisgst.com/irisperidot/gstin-filing-detail?gstinno={gstn_number}&anti_bot_token=MTc0Nzc0NTU5Njo4NGY1ZWI3NzE3YTBlNGMxMDczODg0ZmUwNWEyMmI3NWU4ZDZjNjVlYzk1MmY4NTQwMTVhMzliOTFjYmVjY2Q0"
+    anti_bot_token = get_anti_bot_token()
+    url = f"https://irisgst.com/irisperidot/gstin-filing-detail?gstinno={gstn_number}&anti_bot_token={anti_bot_token}"
 
     print(f"Attempting to fetch URL: {url}")
 
