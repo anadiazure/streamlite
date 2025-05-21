@@ -6,7 +6,7 @@ import re
 
 # Google Maps API Key (Replace with your actual key)
 
-
+GOOGLE_API_KEY = "AIzaSyAXH8AuaroD8hnb47UEiIswJLQGcnZJRzs"
 def get_anti_bot_token():
     url = "https://irisgst.com/irisperidot/"
     response = requests.get(url)
