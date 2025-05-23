@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-GOOGLE_API_KEY = "AIzaSyByqkzi4Ga61VFZypik_F1Oikj7I8TVD28"
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 def get_anti_bot_token():
     """Retrieve anti-bot token from website."""
@@ -116,7 +116,7 @@ if uploaded_file:
 # Direct user input method
 gstn1 = st.text_input("Enter First GSTN Number")
 gstn2 = st.text_input("Enter Second GSTN Number")
-a
+
 if st.button("Calculate Distance"):
     if gstn1 and gstn2:
         with ThreadPoolExecutor() as executor:
